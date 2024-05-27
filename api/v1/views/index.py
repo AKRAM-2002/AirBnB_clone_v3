@@ -1,5 +1,12 @@
 #!/usr/bin/python3
 """ Index file for the api"""
+from models.amenity import Amenity
+from models.city import City
+from models.place import Place
+from models.review import Review
+from models.state import State
+from models.user import User
+from models import storage
 from api.v1.views import app_views
 from flask import jsonify
 
@@ -9,4 +16,15 @@ def status():
     return jsonify({"status": "OK"})
 
 
-# @app_views.route('/api/v1/stats', methods=['GET'], strict_slashes=False)
+@app_views.route('/stats', methods=['GET'], strict_slashes=False)
+def stats():
+    """ Status of API: Number of objects created by type"""
+    
+    classes = [Amenity, City, Place, Review, State, User]
+    names = ["amenities", "cities", "places", "reviews", "states", "users"]
+    stats = {}
+
+    for i in range(len(classes)):
+        stats[names[i]] = storage.count(classes[i])
+
+    return jsonify(stats)
